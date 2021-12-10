@@ -1,0 +1,99 @@
+const router = require("express").Router();
+const Article = require("../models/article");
+const upload = require("../middlewares/upload-photo");
+//POST -CREATE A NEW ARTICLE
+router.post("/articles", upload.single("photo"), async (req, res) => {
+  try {
+    let article = new Article();
+    article.authorID = req.body.authorID;
+    article.categoryID = req.body.categoryID;
+    article.title = req.body.title;
+    article.content = req.body.content;
+    article.photo = req.file.location;
+
+    await article.save();
+    res.json({ status: true, message: "Successfully saved article" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//GET - GET ALL PRODUCTS
+router.get("/articles", async (req, res) => {
+  try {
+    let articles = await Article.find();
+    res.json({
+      success: true,
+      articles: articles,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//GET - GET A SINGLE PRODUCT
+router.get("/articles/:id", async (req, res) => {
+  try {
+    let article = await Article.findOne({ _id: req.params.id });
+    res.json({
+      success: true,
+      article: article,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+//PUT - UPDATE A SINGLE PRODUCT
+router.put("/articles/:id", upload.single("photo"), async (req, res) => {
+  try {
+    let article = await Article.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          title: req.body.title,
+          categoryID: req.body.categoryID,
+          content: req.body.content,
+          photo: req.file.location,
+        },
+      },
+      { upsert: true }
+    );
+    res.json({
+      success: true,
+      updatedArticle: article,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+//DELETE - DELETE A SINGLE PRODUCT
+router.delete("/articles/:id", async (req, res) => {
+  try {
+    let deletedArticle = await Article.findOneAndDelete({ _id: req.params.id });
+
+    if (deletedArticle) {
+      res.json({
+        status: true,
+        message: "Successfully deleted article",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+module.exports = router;

@@ -1,20 +1,37 @@
 const express = require("express");
 const morgan = require("morgan");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+const User = require("./models/user");
+
+dotenv.config();
 
 const app = express();
-
+mongoose.connect(
+  process.env.DATABASE,
+  { useNewUrlParser: true, useUnifiedTopology: true },
+  (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Connected to the Database");
+    }
+  }
+);
 //Middlewares
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-  res.json("merge");
-});
+//require apis
+const articleRoutes = require("./routes/article");
+const categoryRoutes = require("./routes/category");
+const authorRoutes = require("./routes/author");
 
-app.post("/", (req, res) => {
-  console.log(req.body.name);
-});
+app.use("/api", articleRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", authorRoutes);
 
 app.listen(3000, (err) => {
   if (err) {
