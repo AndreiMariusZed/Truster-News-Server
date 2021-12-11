@@ -30,10 +30,12 @@ app.use(express.urlencoded({ extended: false }));
 const articleRoutes = require("./routes/article");
 const categoryRoutes = require("./routes/category");
 const authorRoutes = require("./routes/author");
+const userRoutes = require("./routes/auth");
 
 app.use("/api", articleRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", authorRoutes);
+app.use("/api", userRoutes);
 
 app.listen(3000, (err) => {
   if (err) {
