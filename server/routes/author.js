@@ -22,7 +22,7 @@ router.post("/authors", async (req, res) => {
 
 router.get("/authors", async (req, res) => {
   try {
-    let authors = await Author.find();
+    let authors = await Author.find().populate("userID").exec();
     res.json({
       success: true,
       authors: authors,
