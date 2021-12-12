@@ -90,27 +90,28 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
-// // UPDATE A PROFILE
-// router.put("/auth/user", verifyToken, async (req, res) => {
-//   try {
-//     let foundUser = await User.findOne({ _id: req.decoded._id });
-//     if (foundUser) {
-//       if (req.body.name) foundUser.name = req.body.name;
-//       if (req.body.email) foundUser.email = req.body.email;
-//       if (req.body.password) foundUser.password = req.body.password;
-
-//       await foundUser.save();
-//       res.json({
-//         success: true,
-//         message: "Successfully updated",
-//       });
-//     }
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// });
+// UPDATE A PROFILE
+router.put("/auth/user", verifyToken, async (req, res) => {
+  try {
+    let foundUser = await User.findOne({ _id: req.decoded._id });
+    if (foundUser) {
+      if (req.body.firstName) foundUser.firstName = req.body.firstName;
+      if (req.body.lastName) foundUser.lastName = req.body.lastName;
+      if (req.body.username) foundUser.username = req.body.username;
+      if (req.body.password) foundUser.password = req.body.password;
+      if (req.body.description) foundUser.description = req.body.description;
+      await foundUser.save();
+      res.json({
+        success: true,
+        message: "Successfully updated user",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 
 module.exports = router;
