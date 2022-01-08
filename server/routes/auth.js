@@ -18,6 +18,7 @@ router.post("/auth/signup", async (req, res) => {
       newUser.username = req.body.username;
       newUser.email = req.body.email;
       newUser.password = req.body.password;
+      newUser.isAuthor = false;
       await newUser.save();
       let token = jwt.sign(newUser.toJSON(), process.env.SECRET, {
         expiresIn: 604800, //1 week
@@ -45,7 +46,14 @@ router.get("/auth/user", verifyToken, async (req, res) => {
     if (foundUser) {
       res.json({
         success: true,
-        user: foundUser,
+        user: {
+          email: foundUser.email,
+          firstName: foundUser.firstName,
+          lastName: foundUser.lastName,
+          username: foundUser.username,
+          isAuthor: foundUser.isAuthor,
+          _id: foundUser._id,
+        },
       });
     }
   } catch (err) {

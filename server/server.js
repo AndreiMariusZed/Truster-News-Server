@@ -31,11 +31,13 @@ const articleRoutes = require("./routes/article");
 const categoryRoutes = require("./routes/category");
 const authorRoutes = require("./routes/author");
 const userRoutes = require("./routes/auth");
+const usersRoutes = require("./routes/user");
 
 app.use("/api", articleRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", authorRoutes);
 app.use("/api", userRoutes);
+app.use("/api", usersRoutes);
 
 app.listen(3000, (err) => {
   if (err) {
