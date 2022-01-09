@@ -8,6 +8,8 @@ const ArticleSchema = new Schema({
   title: String,
   content: String,
   photo: String,
+  duration: String,
+  description: String,
 });
 
 ArticleSchema.plugin(deepPopulate);

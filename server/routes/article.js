@@ -10,6 +10,8 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
     article.title = req.body.title;
     article.content = req.body.content;
     article.photo = req.file.location;
+    article.duration = req.body.duration;
+    article.description = req.body.description;
 
     await article.save();
     res.json({ success: true, message: "Successfully saved article" });
@@ -24,7 +26,9 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
 //GET - GET ALL ARTICLES
 router.get("/articles", async (req, res) => {
   try {
-    let articles = await Article.find();
+    let articles = await Article.find()
+      .deepPopulate("categoryID authorID.userID")
+      .exec();
     res.json({
       success: true,
       articles: articles,
