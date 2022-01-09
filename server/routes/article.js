@@ -12,7 +12,7 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
     article.photo = req.file.location;
 
     await article.save();
-    res.json({ status: true, message: "Successfully saved article" });
+    res.json({ success: true, message: "Successfully saved article" });
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -21,7 +21,7 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
   }
 });
 
-//GET - GET ALL PRODUCTS
+//GET - GET ALL ARTICLES
 router.get("/articles", async (req, res) => {
   try {
     let articles = await Article.find();
@@ -37,10 +37,12 @@ router.get("/articles", async (req, res) => {
   }
 });
 
-//GET - GET A SINGLE PRODUCT
+//GET - GET A SINGLE ARTICLE
 router.get("/articles/:id", async (req, res) => {
   try {
-    let article = await Article.findOne({ _id: req.params.id });
+    let article = await Article.findOne({ _id: req.params.id })
+      .deepPopulate("categoryID authorID.userID")
+      .exec();
     res.json({
       success: true,
       article: article,

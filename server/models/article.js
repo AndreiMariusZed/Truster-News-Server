@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const deepPopulate = require("mongoose-deep-populate")(mongoose);
 const Schema = mongoose.Schema;
 
 const ArticleSchema = new Schema({
@@ -8,5 +9,7 @@ const ArticleSchema = new Schema({
   content: String,
   photo: String,
 });
+
+ArticleSchema.plugin(deepPopulate);
 
 module.exports = mongoose.model("Article", ArticleSchema);

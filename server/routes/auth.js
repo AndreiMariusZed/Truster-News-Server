@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/user");
+const Author = require("../models/Author");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middlewares/verify-token");
 
@@ -43,6 +44,23 @@ router.post("/auth/signup", async (req, res) => {
 router.get("/auth/user", verifyToken, async (req, res) => {
   try {
     let foundUser = await User.findOne({ _id: req.decoded._id });
+    if (foundUser.isAuthor) {
+      var foundAuthor = await Author.findOne({ userID: req.decoded._id });
+      res.json({
+        success: true,
+        user: {
+          email: foundUser.email,
+          firstName: foundUser.firstName,
+          lastName: foundUser.lastName,
+          username: foundUser.username,
+          isAuthor: foundUser.isAuthor,
+          _id: foundUser._id,
+          balance: foundAuthor.balance,
+          authorID: foundAuthor.id,
+        },
+      });
+      return;
+    }
     if (foundUser) {
       res.json({
         success: true,
