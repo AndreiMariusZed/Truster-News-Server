@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const Article = require("../models/article");
 const upload = require("../middlewares/upload-photo");
+const NewsAPI = require("newsapi");
+const newsapi = new NewsAPI("664e231e8ae34987a0aae960a8fab892");
 //POST -CREATE A NEW ARTICLE
 router.post("/articles", upload.single("photo"), async (req, res) => {
   try {
@@ -95,6 +97,26 @@ router.delete("/articles/:id", async (req, res) => {
         message: "Successfully deleted article",
       });
     }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+router.get("/topnews", async (req, res) => {
+  try {
+    newsapi.v2
+      .topHeadlines({
+        country: "ro",
+      })
+      .then((response) => {
+        res.json({
+          success: true,
+          topnews: response,
+        });
+      });
   } catch (err) {
     res.status(500).json({
       success: false,
