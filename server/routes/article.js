@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Article = require("../models/article");
 const upload = require("../middlewares/upload-photo");
 const NewsAPI = require("newsapi");
-const newsapi = new NewsAPI("664e231e8ae34987a0aae960a8fab892");
+const newsapi = new NewsAPI(process.env.NEWSAPI);
 //POST -CREATE A NEW ARTICLE
 router.post("/articles", upload.single("photo"), async (req, res) => {
   try {
