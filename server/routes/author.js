@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Author = require("../models/Author");
+const Article = require("../models/article");
 const User = require("../models/user");
 //POST - Create a new author
 router.post("/authors", async (req, res) => {
@@ -49,6 +50,28 @@ router.get("/authors/:id", async (req, res) => {
     res.json({
       success: true,
       author: author,
+    });
+  } catch {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+router.get("/authorsdetail/:id", async (req, res) => {
+  try {
+    console.log(req.params.id);
+    let author = await Author.findOne({ _id: req.params.id })
+      .populate("userID")
+      .exec();
+    let articles = await Article.find({ authorID: req.params.id })
+      .deepPopulate("categoryID authorID.userID")
+      .exec();
+    res.json({
+      success: true,
+      author: author,
+      articles: articles,
     });
   } catch {
     res.status(500).json({

@@ -15,6 +15,16 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
     article.duration = req.body.duration;
     article.description = req.body.description;
 
+    // var spawn = require("child_process").spawn;
+    // var process = spawn("python", [
+    //   "./routes/predict.py",
+    //   req.body.title,
+    //   req.body.content,
+    // ]);
+    // process.stdout.on("data", async function (data) {
+    //   console.log(data.toString());
+    //   console.log("dupa save");
+    // });
     await article.save();
     res.json({ success: true, message: "Successfully saved article" });
   } catch (err) {
