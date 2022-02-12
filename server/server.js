@@ -33,6 +33,7 @@ const authorRoutes = require("./routes/author");
 const userRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/user");
 const applicationRoutes = require("./routes/application");
+const searchRoutes = require("./routes/search");
 
 app.use("/api", articleRoutes);
 app.use("/api", categoryRoutes);
@@ -40,6 +41,7 @@ app.use("/api", authorRoutes);
 app.use("/api", userRoutes);
 app.use("/api", usersRoutes);
 app.use("/api", applicationRoutes);
+app.use("/api", searchRoutes);
 
 app.listen(3000, (err) => {
   if (err) {

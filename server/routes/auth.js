@@ -2,6 +2,7 @@ const router = require("express").Router();
 const User = require("../models/user");
 const Author = require("../models/Author");
 const jwt = require("jsonwebtoken");
+const upload = require("../middlewares/upload-photo");
 const verifyToken = require("../middlewares/verify-token");
 
 //Sign up
@@ -56,7 +57,9 @@ router.get("/auth/user", verifyToken, async (req, res) => {
           isAuthor: foundUser.isAuthor,
           _id: foundUser._id,
           balance: foundAuthor.balance,
+          trust: foundAuthor.trust,
           authorID: foundAuthor.id,
+          photo: foundUser.photo,
         },
       });
       return;
@@ -71,6 +74,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
           username: foundUser.username,
           isAuthor: foundUser.isAuthor,
           _id: foundUser._id,
+          photo: foundUser.photo,
         },
       });
     }
@@ -87,6 +91,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
 router.post("/auth/login", async (req, res) => {
   try {
     let foundUser = await User.findOne({ email: req.body.email });
+    console.log(foundUser);
     if (!foundUser) {
       res.status(403).json({
         success: false,
@@ -102,6 +107,7 @@ router.post("/auth/login", async (req, res) => {
           token: token,
         });
       } else {
+        console.log("aici");
         res.status(403).json({
           success: false,
           message: "Authentification failed, Wrong Password",
@@ -117,27 +123,33 @@ router.post("/auth/login", async (req, res) => {
 });
 
 // UPDATE A PROFILE
-router.put("/auth/user", verifyToken, async (req, res) => {
-  try {
-    let foundUser = await User.findOne({ _id: req.decoded._id });
-    if (foundUser) {
-      if (req.body.firstName) foundUser.firstName = req.body.firstName;
-      if (req.body.lastName) foundUser.lastName = req.body.lastName;
-      if (req.body.username) foundUser.username = req.body.username;
-      if (req.body.password) foundUser.password = req.body.password;
-      if (req.body.description) foundUser.description = req.body.description;
-      await foundUser.save();
-      res.json({
-        success: true,
-        message: "Successfully updated user",
+router.put(
+  "/auth/user",
+  upload.single("photo"),
+  verifyToken,
+  async (req, res) => {
+    try {
+      let foundUser = await User.findOne({ _id: req.decoded._id });
+      if (foundUser) {
+        if (req.body.firstName) foundUser.firstName = req.body.firstName;
+        if (req.body.lastName) foundUser.lastName = req.body.lastName;
+        if (req.body.username) foundUser.username = req.body.username;
+        if (req.body.password) foundUser.password = req.body.password;
+        if (req.file.location) foundUser.photo = req.file.location;
+        if (req.body.description) foundUser.description = req.body.description;
+        await foundUser.save();
+        res.json({
+          success: true,
+          message: "Successfully updated user",
+        });
+      }
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
       });
     }
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
   }
-});
+);
 
 module.exports = router;

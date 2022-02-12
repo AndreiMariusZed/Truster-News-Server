@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const deepPopulate = require("mongoose-deep-populate")(mongoose);
 const Schema = mongoose.Schema;
+const mongooseAlgolia = require("mongoose-algolia");
 
 const ArticleSchema = new Schema({
   categoryID: { type: Schema.Types.ObjectId, ref: "Category" },
@@ -13,5 +14,22 @@ const ArticleSchema = new Schema({
 });
 
 ArticleSchema.plugin(deepPopulate);
+ArticleSchema.plugin(mongooseAlgolia, {
+  appId: process.env.ALGOLIA_APP_ID,
+  apiKey: process.env.ALGOLIA_SECRET,
+  indexName: process.env.ALGOLIA_INDEX,
 
-module.exports = mongoose.model("Article", ArticleSchema);
+  selector: "title _id photo description content duration authorID categoryID",
+  populate: {
+    path: "authorID categoryID",
+  },
+  debug: true,
+});
+
+let Model = mongoose.model("Article", ArticleSchema);
+
+Model.SyncToAlgolia();
+Model.SetAlgoliaSettings({
+  searchableAttributes: ["title"],
+});
+module.exports = Model;

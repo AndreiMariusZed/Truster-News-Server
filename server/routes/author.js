@@ -8,6 +8,7 @@ router.post("/authors", async (req, res) => {
     let author = new Author();
     author.userID = req.body.id;
     author.balance = req.body.balance;
+    author.trust = req.body.trust;
     let user = await User.findOneAndUpdate(
       { _id: req.body.id },
       { $set: { isAuthor: true } }

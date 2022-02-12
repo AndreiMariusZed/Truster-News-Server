@@ -2,6 +2,7 @@ const router = require("express").Router();
 const Article = require("../models/article");
 const upload = require("../middlewares/upload-photo");
 const NewsAPI = require("newsapi");
+const Category = require("../models/category");
 const newsapi = new NewsAPI(process.env.NEWSAPI);
 //POST -CREATE A NEW ARTICLE
 router.post("/articles", upload.single("photo"), async (req, res) => {
@@ -39,6 +40,24 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
 router.get("/articles", async (req, res) => {
   try {
     let articles = await Article.find()
+      .deepPopulate("categoryID authorID.userID")
+      .exec();
+    res.json({
+      success: true,
+      articles: articles,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//GET - GET ALL ARTICLES BY CATEGORY
+router.get("/articlesbycategory/:categoryID", async (req, res) => {
+  try {
+    let articles = await Article.find({ categoryID: req.params.categoryID })
       .deepPopulate("categoryID authorID.userID")
       .exec();
     res.json({

@@ -10,6 +10,7 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   description: String,
   isAuthor: Boolean,
+  photo: String,
 });
 
 UserSchema.pre("save", function (next) {
