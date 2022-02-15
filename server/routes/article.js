@@ -16,20 +16,27 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
     article.duration = req.body.duration;
     article.description = req.body.description;
 
+    let articleTextAndTitle = req.body.title + " " + req.body.wholeText;
+
     var spawn = require("child_process").spawn;
     var process = spawn("python", [
       "D:/licenta/server/ai/predict.py",
-      req.body.title,
-      req.body.content,
+      articleTextAndTitle,
     ]);
     // console.log(process);
     process.stdout.on("data", async function (data) {
-      console.log(data.toString());
-      console.log("dupa save");
-      // await article.save();
-      // res.json({ success: true, message: "Successfully saved article" });
+      // console.log(data.toString().replace(/(\r\n|\n|\r)/gm, ""));
+      const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
+      console.log(response);
+      if (response === "True") {
+        console.log("e adv");
+        await article.save();
+        res.json({ success: true, message: "Successfully saved article" });
+      } else {
+        console.log("nu e adv");
+        res.json({ success: false, message: "Fake news!" });
+      }
     });
-    console.log("bbb");
   } catch (err) {
     res.status(500).json({
       success: false,
