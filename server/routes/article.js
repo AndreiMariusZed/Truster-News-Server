@@ -110,6 +110,8 @@ router.put("/articles/:id", upload.single("photo"), async (req, res) => {
           categoryID: req.body.categoryID,
           content: req.body.content,
           photo: req.file.location,
+          description: req.body.description,
+          duration: req.body.duration,
         },
       },
       { upsert: true }
