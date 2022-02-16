@@ -155,14 +155,14 @@ router.put("/articles/:id", upload.single("photo"), async (req, res) => {
     });
   }
 });
-//DELETE - DELETE A SINGLE PRODUCT
+//DELETE - DELETE A SINGLE ARTICLE
 router.delete("/articles/:id", async (req, res) => {
   try {
     let deletedArticle = await Article.findOneAndDelete({ _id: req.params.id });
 
     if (deletedArticle) {
       res.json({
-        status: true,
+        success: true,
         message: "Successfully deleted article",
       });
     }
