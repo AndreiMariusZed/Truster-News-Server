@@ -11,6 +11,7 @@ const ArticleSchema = new Schema({
   photo: String,
   duration: String,
   description: String,
+  views: Number,
 });
 
 ArticleSchema.plugin(deepPopulate);

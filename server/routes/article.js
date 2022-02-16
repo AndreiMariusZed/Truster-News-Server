@@ -15,6 +15,7 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
     article.photo = req.file.location;
     article.duration = req.body.duration;
     article.description = req.body.description;
+    article.views = 0;
 
     let articleTextAndTitle = req.body.title + " " + req.body.wholeText;
 
@@ -98,7 +99,7 @@ router.get("/articles/:id", async (req, res) => {
     });
   }
 });
-//PUT - UPDATE A SINGLE PRODUCT
+//PUT - UPDATE A SINGLE Article
 router.put("/articles/:id", upload.single("photo"), async (req, res) => {
   try {
     let article = await Article.findOneAndUpdate(
@@ -133,6 +134,27 @@ router.delete("/articles/:id", async (req, res) => {
       res.json({
         status: true,
         message: "Successfully deleted article",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//VIEW AN ARTICLE
+router.put("/viewarticle/:id", async (req, res) => {
+  try {
+    let foundArticle = await Article.findOne({ _id: req.params.id });
+    console.log(req.body.views);
+    if (foundArticle) {
+      if (req.body.views) foundArticle.views = req.body.views;
+      await foundArticle.save();
+      res.json({
+        success: true,
+        message: "Successfully updated user",
       });
     }
   } catch (err) {
