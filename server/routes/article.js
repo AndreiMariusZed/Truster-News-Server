@@ -102,23 +102,51 @@ router.get("/articles/:id", async (req, res) => {
 //PUT - UPDATE A SINGLE Article
 router.put("/articles/:id", upload.single("photo"), async (req, res) => {
   try {
-    let article = await Article.findOneAndUpdate(
-      { _id: req.params.id },
-      {
-        $set: {
-          title: req.body.title,
-          categoryID: req.body.categoryID,
-          content: req.body.content,
-          photo: req.file.location,
-          description: req.body.description,
-          duration: req.body.duration,
-        },
-      },
-      { upsert: true }
-    );
-    res.json({
-      success: true,
-      updatedArticle: article,
+    let articleTextAndTitle = req.body.title + " " + req.body.wholeText;
+    var spawn = require("child_process").spawn;
+    var process = spawn("python", [
+      "D:/licenta/server/ai/predict.py",
+      articleTextAndTitle,
+    ]);
+    process.stdout.on("data", async function (data) {
+      const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
+      console.log(response);
+      if (response === "True") {
+        let foundArticle = await Article.findOne({ _id: req.params.id });
+        if (foundArticle) {
+          if (req.body.title) foundArticle.title = req.body.title;
+          if (req.body.categoryID)
+            foundArticle.categoryID = req.body.categoryID;
+          if (req.body.content) foundArticle.content = req.body.content;
+          if (req.file && req.file.location)
+            foundArticle.photo = req.file.location;
+          if (req.body.description)
+            foundArticle.description = req.body.description;
+          if (req.body.duration) foundArticle.duration = req.body.duration;
+          await foundArticle.save();
+          res.json({
+            success: true,
+            updatedArticle: foundArticle,
+          });
+        }
+        // let article = await Article.findOneAndUpdate(
+        //   { _id: req.params.id },
+        //   {
+        //     $set: {
+        //       title: req.body.title,
+        //       categoryID: req.body.categoryID,
+        //       content: req.body.content,
+        //       photo: req.file.location,
+        //       description: req.body.description,
+        //       duration: req.body.duration,
+        //     },
+        //   },
+        //   { upsert: true }
+        // );
+      } else {
+        console.log("nu e adv");
+        res.json({ success: false, message: "Fake news!" });
+      }
     });
   } catch (err) {
     res.status(500).json({
