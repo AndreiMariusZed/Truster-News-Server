@@ -178,7 +178,6 @@ router.delete("/articles/:id", async (req, res) => {
 router.put("/viewarticle/:id", async (req, res) => {
   try {
     let foundArticle = await Article.findOne({ _id: req.params.id });
-    console.log(req.body.views);
     if (foundArticle) {
       if (req.body.views) foundArticle.views = req.body.views;
       await foundArticle.save();
