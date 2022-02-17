@@ -3,16 +3,20 @@ const deepPopulate = require("mongoose-deep-populate")(mongoose);
 const Schema = mongoose.Schema;
 const mongooseAlgolia = require("mongoose-algolia");
 
-const ArticleSchema = new Schema({
-  categoryID: { type: Schema.Types.ObjectId, ref: "Category" },
-  authorID: { type: Schema.Types.ObjectId, ref: "Author" },
-  title: String,
-  content: String,
-  photo: String,
-  duration: String,
-  description: String,
-  views: Number,
-});
+const ArticleSchema = new Schema(
+  {
+    categoryID: { type: Schema.Types.ObjectId, ref: "Category" },
+    authorID: { type: Schema.Types.ObjectId, ref: "Author" },
+    title: String,
+    content: String,
+    photo: String,
+    duration: String,
+    description: String,
+    views: Number,
+    comments: [Object],
+  },
+  { timestamps: true }
+);
 
 ArticleSchema.plugin(deepPopulate);
 ArticleSchema.plugin(mongooseAlgolia, {

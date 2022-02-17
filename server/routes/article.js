@@ -213,4 +213,39 @@ router.get("/topnews", async (req, res) => {
     });
   }
 });
+//INSERT COMMENT
+
+router.put("/addcomment/:id", async (req, res) => {
+  try {
+    console.log(req.body);
+    let foundArticle = await Article.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $push: {
+          comments: req.body,
+        },
+      }
+    );
+    console.log(foundArticle);
+    if (foundArticle) {
+      res.json({
+        success: true,
+        message: "Successfully added article",
+      });
+    }
+    // if (foundArticle) {
+    //   if (req.body.views) foundArticle.views = req.body.views;
+    //   await foundArticle.save();
+    //   res.json({
+    //     success: true,
+    //     message: "Successfully updated user",
+    //   });
+    // }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 module.exports = router;
