@@ -37,4 +37,33 @@ router.get("/users/:id", async (req, res) => {
     });
   }
 });
+
+//add to bookmark
+router.put("/addbookmark/:id", async (req, res) => {
+  try {
+    console.log(req.body);
+    console.log(req.params.id);
+    let articleID = mongoose.Types.ObjectId(req.body.articleID);
+    let foundUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $push: {
+          bookmarkedArticles: articleID,
+        },
+      }
+    );
+    console.log(foundUser);
+    if (foundUser) {
+      res.json({
+        success: true,
+        message: "Successfully added article",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 module.exports = router;

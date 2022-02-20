@@ -13,6 +13,7 @@ const ArticleSchema = new Schema(
     duration: String,
     description: String,
     views: Number,
+    trustworthy: Number,
     comments: [Object],
   },
   { timestamps: true }

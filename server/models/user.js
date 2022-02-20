@@ -11,6 +11,7 @@ const UserSchema = new Schema({
   description: String,
   isAuthor: Boolean,
   photo: String,
+  bookmarkedArticles: [{ type: Schema.Types.ObjectId, ref: "Article" }],
 });
 
 UserSchema.pre("save", function (next) {

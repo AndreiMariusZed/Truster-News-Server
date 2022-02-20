@@ -60,6 +60,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
           trust: foundAuthor.trust,
           authorID: foundAuthor.id,
           photo: foundUser.photo,
+          bookmarkedArticles: foundUser.bookmarkedArticles,
         },
       });
       return;
@@ -75,6 +76,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
           isAuthor: foundUser.isAuthor,
           _id: foundUser._id,
           photo: foundUser.photo,
+          bookmarkedArticles: foundUser.bookmarkedArticles,
         },
       });
     }
