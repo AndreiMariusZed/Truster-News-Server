@@ -32,7 +32,11 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
       if (response === "True") {
         console.log("e adv");
         await article.save();
-        res.json({ success: true, message: "Successfully saved article" });
+        res.json({
+          success: true,
+          message: "Successfully saved article",
+          article: article,
+        });
       } else {
         console.log("nu e adv");
         res.json({ success: false, message: "Fake news!" });
@@ -233,14 +237,6 @@ router.put("/addcomment/:id", async (req, res) => {
         message: "Successfully added article",
       });
     }
-    // if (foundArticle) {
-    //   if (req.body.views) foundArticle.views = req.body.views;
-    //   await foundArticle.save();
-    //   res.json({
-    //     success: true,
-    //     message: "Successfully updated user",
-    //   });
-    // }
   } catch (err) {
     res.status(500).json({
       success: false,
@@ -248,4 +244,26 @@ router.put("/addcomment/:id", async (req, res) => {
     });
   }
 });
+//CHECK URL
+router.post("/checkurl", async (req, res) => {
+  try {
+    const url = req.body.url;
+    var spawn = require("child_process").spawn;
+    var process = spawn("python", ["D:/licenta/server/ai/scrape.py", url]);
+    process.stdout.on("data", async function (data) {
+      const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
+      res.json({
+        success: true,
+        message: "Successfully checked article",
+        result: result,
+      });
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 module.exports = router;
