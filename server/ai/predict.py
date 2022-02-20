@@ -15,4 +15,4 @@ x = [sys.argv[1]]
 x = tokenizer.texts_to_sequences(x)
 x = pad_sequences(x, maxlen=maxlen)
 
-print((loaded_model.predict(x) > 0.5)[0][0])
+print((loaded_model.predict(x))[0][0])

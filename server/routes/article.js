@@ -24,13 +24,13 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
       "D:/licenta/server/ai/predict.py",
       articleTextAndTitle,
     ]);
-    // console.log(process);
     process.stdout.on("data", async function (data) {
-      // console.log(data.toString().replace(/(\r\n|\n|\r)/gm, ""));
       const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
-      console.log(response);
-      if (response === "True") {
+      console.log(typeof response);
+      console.log(Number(response));
+      if (Number(response) > 0.5) {
         console.log("e adv");
+        article.trustworthy = Number(response);
         await article.save();
         res.json({
           success: true,
@@ -54,6 +54,27 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
 router.get("/articles", async (req, res) => {
   try {
     let articles = await Article.find()
+      .deepPopulate("categoryID authorID.userID")
+      .exec();
+    res.json({
+      success: true,
+      articles: articles,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//GET - GET MOST TRUSTED ARTICLES
+router.get("/mosttrusted", async (req, res) => {
+  try {
+    let articles = await Article.find()
+      .sort({
+        trustworthy: -1,
+      })
       .deepPopulate("categoryID authorID.userID")
       .exec();
     res.json({
