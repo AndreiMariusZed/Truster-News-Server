@@ -104,4 +104,26 @@ router.delete("/authors", async (req, res) => {
     });
   }
 });
+
+//GET - GET MOST TRUSTED AUTHORS
+router.get("/mosttrustedauthors", async (req, res) => {
+  try {
+    let authors = await Author.find()
+      .sort({
+        trust: -1,
+      })
+      .populate("userID")
+      .exec();
+    res.json({
+      success: true,
+      authors: authors,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 module.exports = router;
