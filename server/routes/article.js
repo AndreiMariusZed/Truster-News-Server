@@ -3,6 +3,8 @@ const Article = require("../models/article");
 const upload = require("../middlewares/upload-photo");
 const NewsAPI = require("newsapi");
 const Category = require("../models/category");
+const verifyToken = require("../middlewares/verify-token");
+const User = require("../models/user");
 const newsapi = new NewsAPI(process.env.NEWSAPI);
 //POST -CREATE A NEW ARTICLE
 router.post("/articles", upload.single("photo"), async (req, res) => {
@@ -67,6 +69,42 @@ router.get("/articles", async (req, res) => {
     });
   }
 });
+
+//GET - GET ALL ARTICLES
+// router.get("/articleswithbookmark", verifyToken, async (req, res) => {
+//   try {
+//     let articleswithbookmark = [];
+//     let foundUser = await User.findOne({ _id: req.decoded._id });
+//     // console.log(foundUser.bookmarkedArticles);
+//     let articles = await Article.find()
+//       .deepPopulate("categoryID authorID.userID")
+//       .exec();
+//     articles.forEach(function (article) {
+//       if (foundUser.bookmarkedArticles.includes(article._id)) {
+//         let art = JSON.parse(JSON.stringify(article));
+//         art.isBookmarked = true;
+//         articleswithbookmark.push(art);
+//       } else {
+//         let art = JSON.parse(JSON.stringify(article));
+//         art.isBookmarked = false;
+//         articleswithbookmark.push(art);
+//       }
+//     });
+//     let articles2 = req.decoded._id ? articleswithbookmark : articles;
+//     console.log(articles2);
+//     console.log(articles);
+//     // console.log(articleswithbookmark[0]);
+//     res.json({
+//       success: true,
+//       articleswithbookmark: articleswithbookmark,
+//     });
+//   } catch (err) {
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//     });
+//   }
+// });
 
 //GET - GET MOST TRUSTED ARTICLES
 router.get("/mosttrusted", async (req, res) => {
@@ -154,20 +192,6 @@ router.put("/articles/:id", upload.single("photo"), async (req, res) => {
             updatedArticle: foundArticle,
           });
         }
-        // let article = await Article.findOneAndUpdate(
-        //   { _id: req.params.id },
-        //   {
-        //     $set: {
-        //       title: req.body.title,
-        //       categoryID: req.body.categoryID,
-        //       content: req.body.content,
-        //       photo: req.file.location,
-        //       description: req.body.description,
-        //       duration: req.body.duration,
-        //     },
-        //   },
-        //   { upsert: true }
-        // );
       } else {
         console.log("nu e adv");
         res.json({ success: false, message: "Fake news!" });
@@ -238,8 +262,8 @@ router.get("/topnews", async (req, res) => {
     });
   }
 });
-//INSERT COMMENT
 
+//INSERT COMMENT
 router.put("/addcomment/:id", async (req, res) => {
   try {
     console.log(req.body);
@@ -265,6 +289,7 @@ router.put("/addcomment/:id", async (req, res) => {
     });
   }
 });
+
 //CHECK URL
 router.post("/checkurl", async (req, res) => {
   try {
@@ -286,4 +311,5 @@ router.post("/checkurl", async (req, res) => {
     });
   }
 });
+
 module.exports = router;

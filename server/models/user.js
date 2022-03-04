@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcrypt-nodejs");
+const deepPopulate = require("mongoose-deep-populate")(mongoose);
 
 const UserSchema = new Schema({
   firstName: { type: String, required: true },
@@ -11,7 +12,15 @@ const UserSchema = new Schema({
   description: String,
   isAuthor: Boolean,
   photo: String,
-  bookmarkedArticles: [{ type: Schema.Types.ObjectId, ref: "Article" }],
+  bookmarkedArticles: [
+    { type: Schema.Types.ObjectId, ref: "Article", unique: true },
+  ],
+  recentlyViewed: [
+    { type: Schema.Types.ObjectId, ref: "Article", unique: true },
+  ],
+  followedAuthors: [
+    { type: Schema.Types.ObjectId, ref: "Author", unique: true },
+  ],
 });
 
 UserSchema.pre("save", function (next) {
@@ -33,6 +42,8 @@ UserSchema.pre("save", function (next) {
     return next();
   }
 });
+
+UserSchema.plugin(deepPopulate);
 
 UserSchema.methods.comparePassword = function (password, next) {
   let user = this;

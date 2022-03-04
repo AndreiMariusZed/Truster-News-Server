@@ -2,6 +2,8 @@ const router = require("express").Router();
 const Author = require("../models/Author");
 const Article = require("../models/article");
 const User = require("../models/user");
+const mongoose = require("mongoose");
+const verifyToken = require("../middlewares/verify-token");
 //POST - Create a new author
 router.post("/authors", async (req, res) => {
   try {
@@ -118,6 +120,33 @@ router.get("/mosttrustedauthors", async (req, res) => {
       success: true,
       authors: authors,
     });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//add to recenlty viewed
+router.put("/followauthor", verifyToken, async (req, res) => {
+  try {
+    let authorID = mongoose.Types.ObjectId(req.body.authorID);
+    let foundUser = await User.findOneAndUpdate(
+      { _id: req.decoded._id },
+      {
+        $push: {
+          followedAuthors: authorID,
+        },
+      }
+    );
+    console.log(authorID);
+    if (foundUser) {
+      res.json({
+        success: true,
+        message: "Successfully followed author",
+      });
+    }
   } catch (err) {
     res.status(500).json({
       success: false,

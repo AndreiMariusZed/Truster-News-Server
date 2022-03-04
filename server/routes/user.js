@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/user");
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middlewares/verify-token");
 
@@ -66,4 +67,56 @@ router.put("/addbookmark/:id", async (req, res) => {
     });
   }
 });
+
+//add to recenlty viewed
+router.put("/addrecently/:id", verifyToken, async (req, res) => {
+  try {
+    console.log(req.body);
+    console.log(req.params.id);
+    let articleID = mongoose.Types.ObjectId(req.body.articleID);
+    let foundUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $push: {
+          recentlyViewed: articleID,
+        },
+      }
+    );
+    console.log(foundUser);
+    if (foundUser) {
+      res.json({
+        success: true,
+        message: "Successfully added article",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//get recently viewed
+router.get("/recentlyviewed", verifyToken, async (req, res) => {
+  try {
+    let foundUser = await User.findOne({ _id: req.decoded._id })
+      .deepPopulate(
+        "recentlyViewed recentlyViewed.categoryID recentlyViewed.authorID.userID"
+      )
+      .exec();
+    let recentlyViewed = foundUser.recentlyViewed;
+    console.log(foundUser);
+    res.json({
+      success: true,
+      recentlyViewed: recentlyViewed,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 module.exports = router;
