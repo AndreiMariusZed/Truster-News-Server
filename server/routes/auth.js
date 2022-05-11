@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const User = require("../models/user");
-const Author = require("../models/Author");
+const Author = require("../models/author");
 const jwt = require("jsonwebtoken");
 const upload = require("../middlewares/upload-photo");
 const verifyToken = require("../middlewares/verify-token");
