@@ -42,8 +42,6 @@ router.get("/users/:id", async (req, res) => {
 //add to bookmark
 router.put("/addbookmark/:id", async (req, res) => {
   try {
-    console.log(req.body);
-    console.log(req.params.id);
     let articleID = mongoose.Types.ObjectId(req.body.articleID);
     let foundUser = await User.findOneAndUpdate(
       { _id: req.params.id },
@@ -68,6 +66,34 @@ router.put("/addbookmark/:id", async (req, res) => {
   }
 });
 
+//remove from bookmark
+router.delete("/removebookmark/:id", async (req, res) => {
+  console.log(req.body);
+  try {
+    let articleID = mongoose.Types.ObjectId(req.body.id);
+    let foundUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $pull: {
+          bookmarkedArticles: articleID,
+        },
+      }
+    );
+    console.log(foundUser);
+    if (foundUser) {
+      res.json({
+        success: true,
+        message: "Successfully deleted article",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
 //add to recenlty viewed
 router.put("/addrecently/:id", verifyToken, async (req, res) => {
   try {
@@ -77,7 +103,7 @@ router.put("/addrecently/:id", verifyToken, async (req, res) => {
     let foundUser = await User.findOneAndUpdate(
       { _id: req.params.id },
       {
-        $push: {
+        $addToSet: {
           recentlyViewed: articleID,
         },
       }

@@ -12,15 +12,9 @@ const UserSchema = new Schema({
   description: String,
   isAuthor: Boolean,
   photo: String,
-  bookmarkedArticles: [
-    { type: Schema.Types.ObjectId, ref: "Article", unique: true },
-  ],
-  recentlyViewed: [
-    { type: Schema.Types.ObjectId, ref: "Article", unique: true },
-  ],
-  followedAuthors: [
-    { type: Schema.Types.ObjectId, ref: "Author", unique: true },
-  ],
+  bookmarkedArticles: [{ type: Schema.Types.ObjectId, ref: "Article" }],
+  recentlyViewed: [{ type: Schema.Types.ObjectId, ref: "Article" }],
+  followedAuthors: [{ type: Schema.Types.ObjectId, ref: "Author" }],
 });
 
 UserSchema.pre("save", function (next) {
