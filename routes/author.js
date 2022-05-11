@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const Author = require("../models/Author");
+const Author = require("../models/author");
 const Article = require("../models/article");
 const User = require("../models/user");
 const mongoose = require("mongoose");
