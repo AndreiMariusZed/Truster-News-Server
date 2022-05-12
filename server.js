@@ -43,10 +43,11 @@ app.use("/api", usersRoutes);
 app.use("/api", applicationRoutes);
 app.use("/api", searchRoutes);
 
-app.listen(process.env.PORT || 3000, (err) => {
+let server = app.listen(process.env.PORT || 3000, (err) => {
   if (err) {
     console.log(err);
   } else {
     console.log("Listening on PORT", 3000);
   }
 });
+server.setTimeout(60000);
