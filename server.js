@@ -34,6 +34,7 @@ const userRoutes = require("./routes/auth");
 const usersRoutes = require("./routes/user");
 const applicationRoutes = require("./routes/application");
 const searchRoutes = require("./routes/search");
+const evalRoutes = require("./routes/eval");
 
 app.use("/api", articleRoutes);
 app.use("/api", categoryRoutes);
@@ -42,6 +43,7 @@ app.use("/api", userRoutes);
 app.use("/api", usersRoutes);
 app.use("/api", applicationRoutes);
 app.use("/api", searchRoutes);
+app.use("/api", evalRoutes);
 
 let server = app.listen(process.env.PORT || 3000, (err) => {
   if (err) {
