@@ -1,6 +1,6 @@
 import sys
 
-from tensorflow.keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.sequence import pad_sequences
 
 import keras
 loaded_model = keras.models.load_model('D:/licenta/server/ai/modelul_meu_acc_99.hdf5')
