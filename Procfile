@@ -1,0 +1,1 @@
+web: pip install -r ai/requirements.txt && npm start
