@@ -50,4 +50,4 @@ let server = app.listen(process.env.PORT || 3000, (err) => {
     console.log("Listening on PORT", 3000);
   }
 });
-server.setTimeout(60000);
+server.timeout = 60000;
