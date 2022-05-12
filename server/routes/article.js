@@ -293,6 +293,7 @@ router.put("/addcomment/:id", async (req, res) => {
 //CHECK URL
 router.post("/checkurl", async (req, res) => {
   try {
+    req.setTimeout(360000);
     const url = req.body.url;
     var spawn = require("child_process").spawn;
     var process = spawn("python", ["D:/licenta/server/ai/scrape.py", url]);
