@@ -256,8 +256,8 @@ router.post("/checkurl", async (req, res) => {
     const url = req.body.url;
     const uid = req.body.uid;
     var spawn = require("child_process").spawn;
-    var process = spawn("python", [ __dirname + "\./server/scrape.py", url]);
-    console.log(__dirname + "\./server/scrape.py");
+    var process = spawn("python", [ __dirname + "\/server/scrape.py", url]);
+    console.log(__dirname + "\/server/scrape.py");
     process.stdout.on("data", async function (data) {
       const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
       console.log("AICI A AJUNS ");
