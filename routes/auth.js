@@ -44,7 +44,11 @@ router.post("/auth/signup", async (req, res) => {
 
 router.get("/auth/user", verifyToken, async (req, res) => {
   try {
-    let foundUser = await User.findOne({ _id: req.decoded._id });
+    let foundUser = await User.findOne({ _id: req.decoded._id })
+      .deepPopulate(
+        "bookmarkedArticles bookmarkedArticles.categoryID bookmarkedArticles.authorID.userID followedAuthors followedAuthors.userID"
+      )
+      .exec();
     if (foundUser.isAuthor) {
       var foundAuthor = await Author.findOne({ userID: req.decoded._id });
       res.json({
@@ -61,6 +65,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
           authorID: foundAuthor.id,
           photo: foundUser.photo,
           bookmarkedArticles: foundUser.bookmarkedArticles,
+          followedAuthors: foundUser.followedAuthors,
         },
       });
       return;
@@ -77,6 +82,7 @@ router.get("/auth/user", verifyToken, async (req, res) => {
           _id: foundUser._id,
           photo: foundUser.photo,
           bookmarkedArticles: foundUser.bookmarkedArticles,
+          followedAuthors: foundUser.followedAuthors,
         },
       });
     }
@@ -93,7 +99,6 @@ router.get("/auth/user", verifyToken, async (req, res) => {
 router.post("/auth/login", async (req, res) => {
   try {
     let foundUser = await User.findOne({ email: req.body.email });
-    console.log(foundUser);
     if (!foundUser) {
       res.status(403).json({
         success: false,
@@ -109,7 +114,6 @@ router.post("/auth/login", async (req, res) => {
           token: token,
         });
       } else {
-        console.log("aici");
         res.status(403).json({
           success: false,
           message: "Authentification failed, Wrong Password",

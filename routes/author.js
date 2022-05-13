@@ -20,7 +20,6 @@ router.post("/authors", async (req, res) => {
       res.json({ success: true, message: "Successfully saved author" });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       success: false,
       message: err.message,
@@ -46,7 +45,6 @@ router.get("/authors", async (req, res) => {
 // get a single author
 router.get("/authors/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     let author = await Author.findOne({ userID: req.params.id })
       .populate("userID")
       .exec();
@@ -64,7 +62,6 @@ router.get("/authors/:id", async (req, res) => {
 
 router.get("/authorsdetail/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     let author = await Author.findOne({ _id: req.params.id })
       .populate("userID")
       .exec();
@@ -128,23 +125,48 @@ router.get("/mosttrustedauthors", async (req, res) => {
   }
 });
 
-//add to recenlty viewed
+//follow author
 router.put("/followauthor", verifyToken, async (req, res) => {
   try {
     let authorID = mongoose.Types.ObjectId(req.body.authorID);
     let foundUser = await User.findOneAndUpdate(
       { _id: req.decoded._id },
       {
-        $push: {
+        $addToSet: {
           followedAuthors: authorID,
         },
       }
     );
-    console.log(authorID);
     if (foundUser) {
       res.json({
         success: true,
         message: "Successfully followed author",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//remove from follow
+router.delete("/removefollow/:id", async (req, res) => {
+  try {
+    let authorID = mongoose.Types.ObjectId(req.body.id);
+    let foundUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $pull: {
+          followedAuthors: authorID,
+        },
+      }
+    );
+    if (foundUser) {
+      res.json({
+        success: true,
+        message: "Successfully unfollowed author",
       });
     }
   } catch (err) {

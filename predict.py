@@ -3,12 +3,12 @@ import sys
 from keras.preprocessing.sequence import pad_sequences
 
 import keras
-loaded_model = keras.models.load_model('D:/licenta/server/ai/modelul_meu_acc_99.hdf5')
+loaded_model = keras.models.load_model('./modelul_meu_acc_99.hdf5')
 
 maxlen = 1000
 import pickle
 
-with open('D:/licenta/server/ai/okenizer.hdf5', 'rb') as handle:
+with open('./okenizer.hdf5', 'rb') as handle:
      tokenizer = pickle.load(handle)
 
 x = [sys.argv[1]]

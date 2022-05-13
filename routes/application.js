@@ -48,7 +48,6 @@ router.get("/applications", async (req, res) => {
 // get a single application
 router.get("/applications/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     let application = await Application.findOne({ _id: req.params.id })
       .populate("userID")
       .exec();

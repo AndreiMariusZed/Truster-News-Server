@@ -24,15 +24,12 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
 
     var spawn = require("child_process").spawn;
     var process = spawn("python", [
-      "D:/licenta/server/ai/predict.py",
+      "./predict.py",
       articleTextAndTitle,
     ]);
     process.stdout.on("data", async function (data) {
       const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
-      console.log(typeof response);
-      console.log(Number(response));
       if (Number(response) > 0.5) {
-        console.log("e adv");
         article.trustworthy = Number(response);
         await article.save();
         res.json({
@@ -41,7 +38,6 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
           article: article,
         });
       } else {
-        console.log("nu e adv");
         res.json({ success: false, message: "Fake news!" });
       }
     });
@@ -57,47 +53,14 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
 router.get("/articles", async (req, res) => {
   try {
     let articles = await Article.find()
+    .sort({
+      createdAt: 'desc',
+    })
       .deepPopulate("categoryID authorID.userID")
       .exec();
     res.json({
       success: true,
       articles: articles,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: err.message,
-    });
-  }
-});
-
-//GET - GET ALL ARTICLES
-router.get("/articleswithbookmark", verifyToken, async (req, res) => {
-  try {
-    let articleswithbookmark = [];
-    let foundUser = await User.findOne({ _id: req.decoded._id });
-    // console.log(foundUser.bookmarkedArticles);
-    let articles = await Article.find()
-      .deepPopulate("categoryID authorID.userID")
-      .exec();
-    articles.forEach(function (article) {
-      if (foundUser.bookmarkedArticles.includes(article._id)) {
-        let art = JSON.parse(JSON.stringify(article));
-        art.isBookmarked = true;
-        articleswithbookmark.push(art);
-      } else {
-        let art = JSON.parse(JSON.stringify(article));
-        art.isBookmarked = false;
-        articleswithbookmark.push(art);
-      }
-    });
-    let articles2 = req.decoded._id ? articleswithbookmark : articles;
-    console.log(articles2);
-    console.log(articles);
-    // console.log(articleswithbookmark[0]);
-    res.json({
-      success: true,
-      articleswithbookmark: articleswithbookmark,
     });
   } catch (err) {
     res.status(500).json({
@@ -169,12 +132,11 @@ router.put("/articles/:id", upload.single("photo"), async (req, res) => {
     let articleTextAndTitle = req.body.title + " " + req.body.wholeText;
     var spawn = require("child_process").spawn;
     var process = spawn("python", [
-      "D:/licenta/server/ai/predict.py",
+      "./predict.py",
       articleTextAndTitle,
     ]);
     process.stdout.on("data", async function (data) {
       const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
-      console.log(response);
       if (response === "True") {
         let foundArticle = await Article.findOne({ _id: req.params.id });
         if (foundArticle) {
@@ -194,7 +156,6 @@ router.put("/articles/:id", upload.single("photo"), async (req, res) => {
           });
         }
       } else {
-        console.log("nu e adv");
         res.json({ success: false, message: "Fake news!" });
       }
     });
@@ -267,7 +228,6 @@ router.get("/topnews", async (req, res) => {
 //INSERT COMMENT
 router.put("/addcomment/:id", async (req, res) => {
   try {
-    console.log(req.body);
     let foundArticle = await Article.findOneAndUpdate(
       { _id: req.params.id },
       {
@@ -276,7 +236,6 @@ router.put("/addcomment/:id", async (req, res) => {
         },
       }
     );
-    console.log(foundArticle);
     if (foundArticle) {
       res.json({
         success: true,
@@ -297,7 +256,7 @@ router.post("/checkurl", async (req, res) => {
     const url = req.body.url;
     const uid = req.body.uid;
     var spawn = require("child_process").spawn;
-    var process = spawn("python", ["D:/licenta/server/ai/scrape.py", url]);
+    var process = spawn("python", [ './scrape.py', url]);
     process.stdout.on("data", async function (data) {
       const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
       let eval = new Eval();
@@ -318,4 +277,29 @@ router.post("/checkurl", async (req, res) => {
   }
 });
 
+//Get articles by followed authors
+router.get("/articlesbyfollowed",verifyToken, async (req, res) => {
+  try {
+    let foundUser = await User.findOne({ _id: req.decoded._id });
+    let articles = await Article.find({
+      "authorID":{
+        $in: foundUser.followedAuthors
+      }
+    })
+    .sort({
+      createdAt: 'desc',
+    })
+      .deepPopulate("categoryID authorID.userID")
+      .exec();
+    res.json({
+      success: true,
+      articles: articles,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
 module.exports = router;

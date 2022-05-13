@@ -25,7 +25,6 @@ router.get("/users", async (req, res) => {
 
 router.get("/users/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     let author = await User.findOne({ _id: req.params.id });
     res.json({
       success: true,
@@ -46,12 +45,11 @@ router.put("/addbookmark/:id", async (req, res) => {
     let foundUser = await User.findOneAndUpdate(
       { _id: req.params.id },
       {
-        $push: {
+        $addToSet: {
           bookmarkedArticles: articleID,
         },
       }
     );
-    console.log(foundUser);
     if (foundUser) {
       res.json({
         success: true,
@@ -68,7 +66,6 @@ router.put("/addbookmark/:id", async (req, res) => {
 
 //remove from bookmark
 router.delete("/removebookmark/:id", async (req, res) => {
-  console.log(req.body);
   try {
     let articleID = mongoose.Types.ObjectId(req.body.id);
     let foundUser = await User.findOneAndUpdate(
@@ -79,7 +76,6 @@ router.delete("/removebookmark/:id", async (req, res) => {
         },
       }
     );
-    console.log(foundUser);
     if (foundUser) {
       res.json({
         success: true,
@@ -97,8 +93,6 @@ router.delete("/removebookmark/:id", async (req, res) => {
 //add to recenlty viewed
 router.put("/addrecently/:id", verifyToken, async (req, res) => {
   try {
-    console.log(req.body);
-    console.log(req.params.id);
     let articleID = mongoose.Types.ObjectId(req.body.articleID);
     let foundUser = await User.findOneAndUpdate(
       { _id: req.params.id },
@@ -108,7 +102,6 @@ router.put("/addrecently/:id", verifyToken, async (req, res) => {
         },
       }
     );
-    console.log(foundUser);
     if (foundUser) {
       res.json({
         success: true,
@@ -132,7 +125,6 @@ router.get("/recentlyviewed", verifyToken, async (req, res) => {
       )
       .exec();
     let recentlyViewed = foundUser.recentlyViewed;
-    console.log(foundUser);
     res.json({
       success: true,
       recentlyViewed: recentlyViewed,
