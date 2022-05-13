@@ -10,9 +10,11 @@ text = article.text
 title = article.title
 
 wholeText = title + ' ' + text
-
-from keras.preprocessing.sequence import pad_sequences
-
+try:
+     from keras.preprocessing.sequence import pad_sequences
+except Exception as e:
+     print(e)
+     exit() 
 import keras
 loaded_model = keras.models.load_model('./modelul_meu_acc_99.hdf5')
 
