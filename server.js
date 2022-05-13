@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //require apis
-const articleRoutes = require("./routes/article");
+const articleRoutes = require("./article");
 const categoryRoutes = require("./routes/category");
 const authorRoutes = require("./routes/author");
 const userRoutes = require("./routes/auth");

@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const Article = require("../models/article");
-const Eval = require("../models/eval");
-const upload = require("../middlewares/upload-photo");
+const Article = require("./models/article");
+const Eval = require("./models/eval");
+const upload = require("./middlewares/upload-photo");
 const NewsAPI = require("newsapi");
-const Category = require("../models/category");
-const verifyToken = require("../middlewares/verify-token");
-const User = require("../models/user");
+const Category = require("./models/category");
+const verifyToken = require("./middlewares/verify-token");
+const User = require("./models/user");
 const newsapi = new NewsAPI(process.env.NEWSAPI);
 //POST -CREATE A NEW ARTICLE
 router.post("/articles", upload.single("photo"), async (req, res) => {
@@ -256,7 +256,8 @@ router.post("/checkurl", async (req, res) => {
     const url = req.body.url;
     const uid = req.body.uid;
     var spawn = require("child_process").spawn;
-    var process = spawn("python", [ './scrape.py', url]);
+    var process = spawn("python", [ __dirname + "\\scrape.py", url]);
+    console.log(__dirname + "\\scrape.py");
     process.stdout.on("data", async function (data) {
       const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
       let eval = new Eval();
