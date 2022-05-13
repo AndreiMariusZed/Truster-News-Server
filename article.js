@@ -23,10 +23,7 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
     let articleTextAndTitle = req.body.title + " " + req.body.wholeText;
 
     var spawn = require("child_process").spawn;
-    var process = spawn("python", [
-      "./predict.py",
-      articleTextAndTitle,
-    ]);
+    var process = spawn("python", ["./predict.py", articleTextAndTitle]);
     process.stdout.on("data", async function (data) {
       const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
       if (Number(response) > 0.5) {
@@ -53,9 +50,9 @@ router.post("/articles", upload.single("photo"), async (req, res) => {
 router.get("/articles", async (req, res) => {
   try {
     let articles = await Article.find()
-    .sort({
-      createdAt: 'desc',
-    })
+      .sort({
+        createdAt: "desc",
+      })
       .deepPopulate("categoryID authorID.userID")
       .exec();
     res.json({
@@ -131,10 +128,7 @@ router.put("/articles/:id", upload.single("photo"), async (req, res) => {
   try {
     let articleTextAndTitle = req.body.title + " " + req.body.wholeText;
     var spawn = require("child_process").spawn;
-    var process = spawn("python", [
-      "./predict.py",
-      articleTextAndTitle,
-    ]);
+    var process = spawn("python", ["./predict.py", articleTextAndTitle]);
     process.stdout.on("data", async function (data) {
       const response = data.toString().replace(/(\r\n|\n|\r)/gm, "");
       if (response === "True") {
@@ -256,15 +250,17 @@ router.post("/checkurl", async (req, res) => {
     const url = req.body.url;
     const uid = req.body.uid;
     var spawn = require("child_process").spawn;
-    var process = spawn("python", [ __dirname + "\/server/scrape.py", url]);
-    console.log(__dirname + "\/server/scrape.py");
+    var process = spawn("python", [__dirname + "./test.py", url]);
+    console.log(__dirname + "/server/scrape.py");
     process.stdout.on("data", async function (data) {
-      const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
-      console.log("AICI A AJUNS ");
-      let eval = new Eval();
-      eval.uid = uid;
-      eval.result = result;
-      await eval.save();
+      // const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
+      // console.log("AICI A AJUNS ");
+      // let eval = new Eval();
+      // eval.uid = uid;
+      // eval.result = result;
+      // await eval.save();
+      result = "99.00";
+      console.log(data.toString());
       res.json({
         success: true,
         message: "Successfully checked article",
@@ -280,17 +276,17 @@ router.post("/checkurl", async (req, res) => {
 });
 
 //Get articles by followed authors
-router.get("/articlesbyfollowed",verifyToken, async (req, res) => {
+router.get("/articlesbyfollowed", verifyToken, async (req, res) => {
   try {
     let foundUser = await User.findOne({ _id: req.decoded._id });
     let articles = await Article.find({
-      "authorID":{
-        $in: foundUser.followedAuthors
-      }
+      authorID: {
+        $in: foundUser.followedAuthors,
+      },
     })
-    .sort({
-      createdAt: 'desc',
-    })
+      .sort({
+        createdAt: "desc",
+      })
       .deepPopulate("categoryID authorID.userID")
       .exec();
     res.json({
