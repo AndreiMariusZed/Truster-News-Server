@@ -128,7 +128,7 @@ router.get("/mosttrustedauthors", async (req, res) => {
   }
 });
 
-//add to recenlty viewed
+//follow author
 router.put("/followauthor", verifyToken, async (req, res) => {
   try {
     let authorID = mongoose.Types.ObjectId(req.body.authorID);
@@ -145,6 +145,34 @@ router.put("/followauthor", verifyToken, async (req, res) => {
       res.json({
         success: true,
         message: "Successfully followed author",
+      });
+    }
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+});
+
+//remove from follow
+router.delete("/removefollow/:id", async (req, res) => {
+  console.log(req.body);
+  try {
+    let authorID = mongoose.Types.ObjectId(req.body.id);
+    let foundUser = await User.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $pull: {
+          followedAuthors: authorID,
+        },
+      }
+    );
+    console.log(foundUser);
+    if (foundUser) {
+      res.json({
+        success: true,
+        message: "Successfully unfollowed author",
       });
     }
   } catch (err) {

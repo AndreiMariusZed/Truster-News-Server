@@ -46,7 +46,7 @@ router.put("/addbookmark/:id", async (req, res) => {
     let foundUser = await User.findOneAndUpdate(
       { _id: req.params.id },
       {
-        $push: {
+        $addToSet: {
           bookmarkedArticles: articleID,
         },
       }

@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const Article = require("../models/article");
+const Eval = require("../models/eval");
 const upload = require("../middlewares/upload-photo");
 const NewsAPI = require("newsapi");
 const Category = require("../models/category");
@@ -293,12 +294,16 @@ router.put("/addcomment/:id", async (req, res) => {
 //CHECK URL
 router.post("/checkurl", async (req, res) => {
   try {
-    req.setTimeout(360000);
     const url = req.body.url;
+    const uid = req.body.uid;
     var spawn = require("child_process").spawn;
     var process = spawn("python", ["D:/licenta/server/ai/scrape.py", url]);
     process.stdout.on("data", async function (data) {
       const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
+      let eval = new Eval();
+      eval.uid = uid;
+      eval.result = result;
+      await eval.save();
       res.json({
         success: true,
         message: "Successfully checked article",
