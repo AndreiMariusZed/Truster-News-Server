@@ -253,13 +253,12 @@ router.post("/checkurl", async (req, res) => {
     var process = spawn("python", ["./scrape.py", url]);
     console.log(__dirname + "/server/scrape.py");
     process.stdout.on("data", async function (data) {
-      // const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
-      // console.log("AICI A AJUNS ");
-      // let eval = new Eval();
-      // eval.uid = uid;
-      // eval.result = result;
-      // await eval.save();
-      result = "99.00";
+      const result = data.toString().replace(/(\r\n|\n|\r)/gm, "");
+      console.log("AICI A AJUNS ");
+      let eval = new Eval();
+      eval.uid = uid;
+      eval.result = result;
+      await eval.save();
       console.log(data.toString());
       res.json({
         success: true,
